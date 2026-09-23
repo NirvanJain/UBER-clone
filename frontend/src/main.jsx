@@ -7,6 +7,7 @@ import UserContext from './context/UserContext.jsx';
 import CaptainContext from './context/CapatainContext.jsx';
 import SocketProvider from './context/SocketContext.jsx';
 
+// App providers are mounted at the root so all pages can share auth and socket state.
 createRoot(document.getElementById('root')).render(
 
   <CaptainContext>
