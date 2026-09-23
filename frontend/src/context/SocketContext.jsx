@@ -2,13 +2,15 @@
 import React, { createContext, useEffect } from 'react';
 import { io } from 'socket.io-client';
 
+// Exposes a shared socket instance to all pages that need live ride updates.
 export const SocketContext = createContext();
 
-const socket = io(`${import.meta.env.VITE_BASE_URL}`); // Replace with your server URL
+// Create the socket once at module load so every component shares the same connection.
+const socket = io(`${import.meta.env.VITE_BASE_URL}`);
 
 const SocketProvider = ({ children }) => {
     useEffect(() => {
-        // Basic connection logic
+        // Keep connection lifecycle logging for debugging during real-time ride events.
         socket.on('connect', () => {
             console.log('Connected to server');
         });
@@ -18,8 +20,6 @@ const SocketProvider = ({ children }) => {
         });
 
     }, []);
-
-
 
     return (
         <SocketContext.Provider value={{ socket }}>
