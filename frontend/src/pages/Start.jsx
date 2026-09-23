@@ -2,6 +2,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+// Landing page shown before a user chooses to sign in as a rider or captain.
 const Start = () => {
   return (
     <div>
