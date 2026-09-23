@@ -15,19 +15,24 @@ import Riding from './pages/Riding'
 import CaptainRiding from './pages/CaptainRiding'
 import 'remixicon/fonts/remixicon.css'
 
+// Main app routing for both rider and captain journeys.
 const App = () => {
 
   return (
     <div>
       <Routes>
+        {/* Public entry screens */}
         <Route path='/' element={<Start />} />
         <Route path='/login' element={<UserLogin />} />
-        <Route path='/riding' element={<Riding />} />
-        <Route path='/captain-riding' element={<CaptainRiding />} />
-
         <Route path='/signup' element={<UserSignup />} />
         <Route path='/captain-login' element={<Captainlogin />} />
         <Route path='/captain-signup' element={<CaptainSignup />} />
+
+        {/* Ride lifecycle screens */}
+        <Route path='/riding' element={<Riding />} />
+        <Route path='/captain-riding' element={<CaptainRiding />} />
+
+        {/* Protected rider routes */}
         <Route path='/home'
           element={
             <UserProtectWrapper>
@@ -39,6 +44,8 @@ const App = () => {
             <UserLogout />
           </UserProtectWrapper>
           } />
+
+        {/* Protected captain routes */}
         <Route path='/captain-home' element={
           <CaptainProtectWrapper>
             <CaptainHome />
