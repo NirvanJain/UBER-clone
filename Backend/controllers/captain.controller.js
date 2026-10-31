@@ -45,6 +45,8 @@ module.exports.loginCaptain = async (req, res, next) => {
         return res.status(400).json({ errors: errors.array() });
     }
 
+    // ISSUE: The captain JWT is stored in a cookie without `httpOnly`, `secure`, or `sameSite` protection.
+    // This is a common path to account takeover via XSS or malicious browser scripts.
     const { email, password } = req.body;
 
     const captain = await captainModel.findOne({ email }).select('+password');
@@ -71,6 +73,8 @@ module.exports.getCaptainProfile = async (req, res, next) => {
 }
 
 module.exports.logoutCaptain = async (req, res, next) => {
+    // ISSUE: Like the user logout flow, the actual token is read after the cookie is cleared.
+    // This can blacklist the wrong value and leave a valid captain session active.
     const token = req.cookies.token || req.headers.authorization?.split(' ')[ 1 ];
 
     await blackListTokenModel.create({ token });
