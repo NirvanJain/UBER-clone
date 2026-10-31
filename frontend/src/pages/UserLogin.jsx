@@ -31,6 +31,8 @@ const UserLogin = () => {
 
     if (response.status === 200) {
       const data = response.data
+      // ISSUE: JWT is being stored in `localStorage`, which is readable by any script running on the page.
+      // This makes token theft trivial if the app is ever hit by XSS or a malicious extension.
       setUser(data.user)
       localStorage.setItem('token', data.token)
       navigate('/home')
