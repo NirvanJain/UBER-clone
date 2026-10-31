@@ -6,6 +6,8 @@ const captainModel = require('../models/captain.model');
 
 
 module.exports.authUser = async (req, res, next) => {
+    // ISSUE: Auth is read from a cookie or Authorization header without strict validation.
+    // Malformed headers can slip through and the middleware assumes the token is always valid.
     const token = req.cookies.token || req.headers.authorization?.split(' ')[ 1 ];
 
     if (!token) {
