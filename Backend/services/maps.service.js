@@ -2,6 +2,8 @@ const axios = require('axios');
 const captainModel = require('../models/captain.model');
 
 module.exports.getAddressCoordinate = async (address) => {
+    // ISSUE: The app assumes a Google Maps API key is always configured and does not validate it.
+    // Missing credentials or invalid requests will fail unpredictably and can leak error details to clients.
     const apiKey = process.env.GOOGLE_MAPS_API;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
 
