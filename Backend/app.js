@@ -12,6 +12,8 @@ const rideRoutes = require('./routes/ride.routes');
 
 connectToDb();
 
+// ISSUE: CORS is enabled for all origins with no whitelist or credential policy.
+// This allows arbitrary websites to call authenticated endpoints and makes cookie-based auth unsafe.
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
