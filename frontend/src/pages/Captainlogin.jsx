@@ -31,6 +31,8 @@ const Captainlogin = () => {
     if (response.status === 200) {
       const data = response.data
 
+      // ISSUE: The captain token is also stored in `localStorage`, which is not a secure place for auth sessions.
+      // This shares the same XSS risk as the user login flow and makes session hijacking easy.
       setCaptain(data.captain)
       localStorage.setItem('token', data.token)
       navigate('/captain-home')
