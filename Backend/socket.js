@@ -6,6 +6,8 @@ let io;
 
 function initializeSocket(server) {
     io = socketIo(server, {
+        // ISSUE: Socket.IO accepts all origins and has no authentication middleware.
+        // Any browser can connect to live ride events, expose user/captain locations, or spoof updates.
         cors: {
             origin: '*',
             methods: [ 'GET', 'POST' ]
