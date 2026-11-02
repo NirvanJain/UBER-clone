@@ -10,11 +10,23 @@ const captainRoutes = require('./routes/captain.routes');
 const mapsRoutes = require('./routes/maps.routes');
 const rideRoutes = require('./routes/ride.routes');
 
+if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not configured');
+}
+
 connectToDb();
 
-// ISSUE: CORS is enabled for all origins with no whitelist or credential policy.
-// This allows arbitrary websites to call authenticated endpoints and makes cookie-based auth unsafe.
-app.use(cors());
+const allowedOrigins = [ process.env.FRONTEND_URL, 'http://localhost:5173', 'http://127.0.0.1:5173' ].filter(Boolean);
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+            return;
+        }
+        callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
