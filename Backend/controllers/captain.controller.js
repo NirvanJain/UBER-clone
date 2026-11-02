@@ -63,7 +63,12 @@ module.exports.loginCaptain = async (req, res, next) => {
 
     const token = captain.generateAuthToken();
 
-    res.cookie('token', token);
+    res.cookie('token', token, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000
+    });
 
     res.status(200).json({ token, captain });
 }
@@ -73,13 +78,17 @@ module.exports.getCaptainProfile = async (req, res, next) => {
 }
 
 module.exports.logoutCaptain = async (req, res, next) => {
-    // ISSUE: Like the user logout flow, the actual token is read after the cookie is cleared.
-    // This can blacklist the wrong value and leave a valid captain session active.
-    const token = req.cookies.token || req.headers.authorization?.split(' ')[ 1 ];
+    const token = req.cookies?.token || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.split(' ')[1] : null);
 
-    await blackListTokenModel.create({ token });
+    if (token) {
+        await blackListTokenModel.create({ token }).catch(() => {});
+    }
 
-    res.clearCookie('token');
+    res.clearCookie('token', {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production'
+    });
 
     res.status(200).json({ message: 'Logout successfully' });
 }
