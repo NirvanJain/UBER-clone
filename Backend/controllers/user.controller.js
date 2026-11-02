@@ -59,7 +59,12 @@ module.exports.loginUser = async (req, res, next) => {
 
     const token = user.generateAuthToken();
 
-    res.cookie('token', token);
+    res.cookie('token', token, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000
+    });
 
     res.status(200).json({ token, user });
 }
@@ -71,12 +76,17 @@ module.exports.getUserProfile = async (req, res, next) => {
 }
 
 module.exports.logoutUser = async (req, res, next) => {
-    // ISSUE: Logout is broken because the cookie is cleared before the active token is read.
-    // The blacklist may receive `undefined`, so the real JWT remains valid after logout.
-    res.clearCookie('token');
-    const token = req.cookies.token || req.headers.authorization.split(' ')[ 1 ];
+    const token = req.cookies?.token || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.split(' ')[1] : null);
 
-    await blackListTokenModel.create({ token });
+    if (token) {
+        await blackListTokenModel.create({ token }).catch(() => {});
+    }
+
+    res.clearCookie('token', {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production'
+    });
 
     res.status(200).json({ message: 'Logged out' });
 
