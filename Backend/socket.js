@@ -5,12 +5,19 @@ const captainModel = require('./models/captain.model');
 let io;
 
 function initializeSocket(server) {
+    const allowedOrigins = [ process.env.FRONTEND_URL, 'http://localhost:5173', 'http://127.0.0.1:5173' ].filter(Boolean);
+
     io = socketIo(server, {
-        // ISSUE: Socket.IO accepts all origins and has no authentication middleware.
-        // Any browser can connect to live ride events, expose user/captain locations, or spoof updates.
         cors: {
-            origin: '*',
-            methods: [ 'GET', 'POST' ]
+            origin: (origin, callback) => {
+                if (!origin || allowedOrigins.includes(origin)) {
+                    callback(null, true);
+                    return;
+                }
+                callback(new Error('Socket origin not allowed'));
+            },
+            methods: [ 'GET', 'POST' ],
+            credentials: true
         }
     });
 
